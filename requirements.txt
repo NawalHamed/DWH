@@ -1,0 +1,48 @@
+# Core requirements for MageAI
+mage-ai
+pandas
+numpy
+sqlalchemy
+psycopg2-binary  # PostgreSQL integration
+
+# Cloud integrations
+#boto3                   # AWS
+#google-cloud-storage    # Google Cloud Storage
+#google-cloud-bigquery   # BigQuery
+#azure-storage-blob      # Azure Blob Storage
+#azure-mgmt-resource     # Azure Resource Manager
+
+# Machine Learning
+#scikit-learn
+#xgboost
+#tensorflow
+#torch
+
+# Visualization
+matplotlib
+seaborn
+plotly
+
+# Data Processing
+dask
+pyarrow
+pyspark
+
+# API Requests
+requests
+
+# Additional Database Integrations
+pymysql                 # MySQL
+#sqlite3                 # SQLite
+#cx_Oracle               # Oracle Database
+#pyodbc                  # ODBC connections
+
+# dbt Core (required for dbt usage)
+dbt-core
+dbt-postgres            # dbt PostgreSQL adapter
+#dbt-bigquery            # dbt BigQuery adapter (if using BigQuery)
+#dbt-snowflake           # dbt Snowflake adapter (if using Snowflake)
+#dbt-redshift            # dbt Redshift adapter (if using Redshift)
+
+# Optional Utilities
+pyyaml                  # YAML processing for configurations
