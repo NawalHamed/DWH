@@ -24,8 +24,8 @@ services:
       - shared-network
     
     volumes:
-      - db-data:/var/lib/postgresql/data #db-data
-      #- ./init-scripts:/docker-entrypoint-initdb.d
+      - shared-database-data:/var/lib/postgresql/data #db-data
+      - ./init-scripts:/docker-entrypoint-initdb.d
      
 
     healthcheck:
@@ -46,9 +46,9 @@ services:
     environment:
       VIRTUAL_HOST: dwh-mageai.rihal.dev
       USER_CODE_PATH: /home/src/mem
-      POSTGRES_DBNAME: mageai
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: secure12345
+      POSTGRES_DBNAME: mageai_db
+      POSTGRES_USER: mageai_user
+      POSTGRES_PASSWORD: mageai_pass
       POSTGRES_HOST: db
       POSTGRES_PORT: 5432
     ports:
@@ -72,10 +72,10 @@ services:
     environment:
       VIRTUAL_HOST: dwh-metabase.rihal.dev
       MB_DB_TYPE: postgres
-      MB_DB_DBNAME: metabase
+      MB_DB_DBNAME: metabase_db
       MB_DB_PORT: 5432
-      MB_DB_USER: postgres
-      MB_DB_PASS: secure12345
+      MB_DB_USER: metabase_user
+      MB_DB_PASS: metabase_pass
       MB_DB_HOST: db
     networks:
       - shared-network
@@ -141,7 +141,7 @@ services:
       timeout: 15s
       retries: 10
     volumes:
-      - openmetadata-es-data:/usr/share/elasticsearch/data 
+      - es-data:/usr/share/elasticsearch/data 
 
   execute-migrate-all:
     container_name: ${DEPLOYMENT_NAME}-openmetadata-execute-migrate-all
@@ -208,11 +208,11 @@ services:
       DB_DRIVER_CLASS: ${DB_DRIVER_CLASS:-org.postgresql.Driver}
       DB_SCHEME: ${DB_SCHEME:-postgresql}
       DB_PARAMS: ${DB_PARAMS:-allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC}
-      DB_USER: ${DB_USER:-postgres}
-      DB_USER_PASSWORD: ${DB_USER_PASSWORD:-secure12345}
+      DB_USER: ${DB_USER:-openmetadata_user}
+      DB_USER_PASSWORD: ${DB_USER_PASSWORD:-openmetadata_pass}
       DB_HOST: ${DB_HOST:-db}
       DB_PORT: ${DB_PORT:-5432}
-      OM_DATABASE: ${OM_DATABASE:-openmetadata}
+      OM_DATABASE: ${OM_DATABASE:-openmetadata_db}
       # ElasticSearch Configurations
       ELASTICSEARCH_HOST: ${ELASTICSEARCH_HOST:- elasticsearch}
       ELASTICSEARCH_PORT: ${ELASTICSEARCH_PORT:-9200}
@@ -382,11 +382,11 @@ services:
       DB_DRIVER_CLASS: ${DB_DRIVER_CLASS:-org.postgresql.Driver}
       DB_SCHEME: ${DB_SCHEME:-postgresql}
       DB_PARAMS: ${DB_PARAMS:-allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC}
-      DB_USER: ${DB_USER:-postgres}
-      DB_USER_PASSWORD: ${DB_USER_PASSWORD:-secure12345}
+      DB_USER: ${DB_USER:-openmetadata_user}
+      DB_USER_PASSWORD: ${DB_USER_PASSWORD:-openmetadata_pass}
       DB_HOST: ${DB_HOST:-db}
       DB_PORT: ${DB_PORT:-5432}
-      OM_DATABASE: ${OM_DATABASE:-openmetadata}
+      OM_DATABASE: ${OM_DATABASE:-openmetadata_db}
       # ElasticSearch Configurations
       ELASTICSEARCH_HOST: ${ELASTICSEARCH_HOST:- elasticsearch}
       ELASTICSEARCH_PORT: ${ELASTICSEARCH_PORT:-9200}
@@ -513,10 +513,10 @@ services:
       AIRFLOW__OPENMETADATA_AIRFLOW_APIS__DAG_GENERATED_CONFIGS: "/opt/airflow/dag_generated_configs"
       DB_HOST: ${AIRFLOW_DB_HOST:-db}
       DB_PORT: ${AIRFLOW_DB_PORT:-5432}
-      AIRFLOW_DB: ${AIRFLOW_DB:-airflow}
-      DB_USER: ${AIRFLOW_DB_USER:-postgres}
+      AIRFLOW_DB: ${AIRFLOW_DB:-airflow_db}
+      DB_USER: ${AIRFLOW_DB_USER:-airflow_user}
       DB_SCHEME: ${AIRFLOW_DB_SCHEME:-postgresql+psycopg2}
-      DB_PASSWORD: ${AIRFLOW_DB_PASSWORD:-secure12345}
+      DB_PASSWORD: ${AIRFLOW_DB_PASSWORD:-airflow_pass}
       RATELIMIT_STORAGE_URL: redis://redis:6379/0
      
     entrypoint: /bin/bash
@@ -529,9 +529,9 @@ services:
       - openmetadata-network
       - shared-network
     volumes:
-      - openmetadata-ingestion-volume-dag-airflow:/opt/airflow/dag_generated_configs
-      - openmetadata-ingestion-volume-dags:/opt/airflow/dags
-      - openmetadata-ingestion-volume-tmp:/tmp
+      - ingestion-volume-dag-airflow:/opt/airflow/dag_generated_configs
+      - ingestion-volume-dags:/opt/airflow/dags
+      - ingestion-volume-tmp:/tmp
 
 
 volumes:
@@ -540,12 +540,12 @@ volumes:
   pgduckdb-data:
   pgduckdb-config:
   cloudbeaver-config:
-  openmetadata-ingestion-volume-dag-airflow:
-  openmetadata-ingestion-volume-dags:
-  openmetadata-ingestion-volume-tmp:
-  openmetadata-es-data:
+  ingestion-volume-dag-airflow:
+  ingestion-volume-dags:
+  ingestion-volume-tmp:
+  es-data:
   metabase-urandom:
-  db-data:
+  shared-database-data:
 
 networks:
   openmetadata-network:
