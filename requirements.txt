@@ -1,5 +1,5 @@
 # Core requirements for MageAI
-mage-ai
+#mage-ai
 pandas
 numpy
 sqlalchemy
