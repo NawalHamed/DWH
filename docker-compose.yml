@@ -141,7 +141,7 @@ services:
       timeout: 15s
       retries: 10
     volumes:
-      - es-data:/usr/share/elasticsearch/data 
+      - openmetadata-es-data:/usr/share/elasticsearch/data 
 
   execute-migrate-all:
     container_name: ${DEPLOYMENT_NAME}-openmetadata-execute-migrate-all
