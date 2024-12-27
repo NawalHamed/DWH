@@ -6,7 +6,7 @@ services:
     image: postgres:latest
     container_name: ${DEPLOYMENT_NAME}-db
     environment:
-      POSTGRES_USER: postgres
+      POSTGRES_USER: postgres # 
       POSTGRES_PASSWORD: secure12345
       POSTGRES_DB: postgres
     ports:
@@ -24,10 +24,9 @@ services:
       - shared-network
     
     volumes:
-      - shared-database-data:/var/lib/postgresql/data
-      - ./init-scripts:/docker-entrypoint-initdb.d
-      #- metabase-data:/var/lib/postgresql/data/metabase
-      #- openmetabase-data:/var/lib/postgresql/data/openmetabase
+      - db-data:/var/lib/postgresql/data #db-data
+      #- ./init-scripts:/docker-entrypoint-initdb.d
+     
 
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "postgres"]
@@ -47,16 +46,16 @@ services:
     environment:
       VIRTUAL_HOST: dwh-mageai.rihal.dev
       USER_CODE_PATH: /home/src/mem
-      POSTGRES_DBNAME: mageai_db
-      POSTGRES_USER: mageai_user
-      POSTGRES_PASSWORD: mageai_pass
+      POSTGRES_DBNAME: mageai
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: secure12345
       POSTGRES_HOST: db
       POSTGRES_PORT: 5432
     ports:
       - 6789:6789
     volumes:
       - mageai-data:/home/src/
-    restart: on-failure:5
+    restart: always
 
     networks:
       - shared-network
@@ -73,10 +72,10 @@ services:
     environment:
       VIRTUAL_HOST: dwh-metabase.rihal.dev
       MB_DB_TYPE: postgres
-      MB_DB_DBNAME: metabase_db
+      MB_DB_DBNAME: metabase
       MB_DB_PORT: 5432
-      MB_DB_USER: metabase_user
-      MB_DB_PASS: metabase_pass
+      MB_DB_USER: postgres
+      MB_DB_PASS: secure12345
       MB_DB_HOST: db
     networks:
       - shared-network
@@ -98,8 +97,8 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: duckdb
     volumes:
-      - ./pgduckdb_config/postgresql.conf:/etc/postgresql/postgresql.conf
-      #- pgduckdb-config:/etc/postgresql
+      #- ./pgduckdb_config/postgresql.conf:/etc/postgresql/postgresql.conf
+      - pgduckdb-config:/etc/postgresql
       - pgduckdb-data:/var/lib/postgresql/data
       
     command: postgres -c config_file=/etc/postgresql/postgresql.conf
@@ -209,11 +208,11 @@ services:
       DB_DRIVER_CLASS: ${DB_DRIVER_CLASS:-org.postgresql.Driver}
       DB_SCHEME: ${DB_SCHEME:-postgresql}
       DB_PARAMS: ${DB_PARAMS:-allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC}
-      DB_USER: ${DB_USER:-openmetadata_user}
-      DB_USER_PASSWORD: ${DB_USER_PASSWORD:-openmetadata_pass}
+      DB_USER: ${DB_USER:-postgres}
+      DB_USER_PASSWORD: ${DB_USER_PASSWORD:-secure12345}
       DB_HOST: ${DB_HOST:-db}
       DB_PORT: ${DB_PORT:-5432}
-      OM_DATABASE: ${OM_DATABASE:-openmetadata_db}
+      OM_DATABASE: ${OM_DATABASE:-openmetadata}
       # ElasticSearch Configurations
       ELASTICSEARCH_HOST: ${ELASTICSEARCH_HOST:- elasticsearch}
       ELASTICSEARCH_PORT: ${ELASTICSEARCH_PORT:-9200}
@@ -383,11 +382,11 @@ services:
       DB_DRIVER_CLASS: ${DB_DRIVER_CLASS:-org.postgresql.Driver}
       DB_SCHEME: ${DB_SCHEME:-postgresql}
       DB_PARAMS: ${DB_PARAMS:-allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC}
-      DB_USER: ${DB_USER:-openmetadata_user}
-      DB_USER_PASSWORD: ${DB_USER_PASSWORD:-openmetadata_pass}
+      DB_USER: ${DB_USER:-postgres}
+      DB_USER_PASSWORD: ${DB_USER_PASSWORD:-secure12345}
       DB_HOST: ${DB_HOST:-db}
       DB_PORT: ${DB_PORT:-5432}
-      OM_DATABASE: ${OM_DATABASE:-openmetadata_db}
+      OM_DATABASE: ${OM_DATABASE:-openmetadata}
       # ElasticSearch Configurations
       ELASTICSEARCH_HOST: ${ELASTICSEARCH_HOST:- elasticsearch}
       ELASTICSEARCH_PORT: ${ELASTICSEARCH_PORT:-9200}
@@ -514,10 +513,10 @@ services:
       AIRFLOW__OPENMETADATA_AIRFLOW_APIS__DAG_GENERATED_CONFIGS: "/opt/airflow/dag_generated_configs"
       DB_HOST: ${AIRFLOW_DB_HOST:-db}
       DB_PORT: ${AIRFLOW_DB_PORT:-5432}
-      AIRFLOW_DB: ${AIRFLOW_DB:-airflow_db}
-      DB_USER: ${AIRFLOW_DB_USER:-airflow_user}
+      AIRFLOW_DB: ${AIRFLOW_DB:-airflow}
+      DB_USER: ${AIRFLOW_DB_USER:-postgres}
       DB_SCHEME: ${AIRFLOW_DB_SCHEME:-postgresql+psycopg2}
-      DB_PASSWORD: ${AIRFLOW_DB_PASSWORD:-airflow_pass}
+      DB_PASSWORD: ${AIRFLOW_DB_PASSWORD:-secure12345}
       RATELIMIT_STORAGE_URL: redis://redis:6379/0
      
     entrypoint: /bin/bash
@@ -530,41 +529,23 @@ services:
       - openmetadata-network
       - shared-network
     volumes:
-      - ingestion-volume-dag-airflow:/opt/airflow/dag_generated_configs
-      - ingestion-volume-dags:/opt/airflow/dags
-      - ingestion-volume-tmp:/tmp
+      - openmetadata-ingestion-volume-dag-airflow:/opt/airflow/dag_generated_configs
+      - openmetadata-ingestion-volume-dags:/opt/airflow/dags
+      - openmetadata-ingestion-volume-tmp:/tmp
 
 
 volumes:
 
-#Mageai----------------------------------------------------------------------------------------
-
-
   mageai-data:
-
-#pgduckdb----------------------------------------------------------------------------------------
-
   pgduckdb-data:
   pgduckdb-config:
-
-#cloudbeaver----------------------------------------------------------------------------------------
-
   cloudbeaver-config:
-
-#openmetadata----------------------------------------------------------------------------------------
-
-  ingestion-volume-dag-airflow:
-  ingestion-volume-dags:
-  ingestion-volume-tmp:
-  es-data:
-
-#metabase----------------------------------------------------------------------------------------
-
-  #metabase-data:
+  openmetadata-ingestion-volume-dag-airflow:
+  openmetadata-ingestion-volume-dags:
+  openmetadata-ingestion-volume-tmp:
+  openmetadata-es-data:
   metabase-urandom:
-
-#databases----------------------------------------------------------------------------------------
-  shared-database-data:
+  db-data:
 
 networks:
   openmetadata-network:
